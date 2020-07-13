@@ -1,4 +1,5 @@
 import numpy as np
+# embedding sequence to one-hot code
 
 class s2t(object):
     
