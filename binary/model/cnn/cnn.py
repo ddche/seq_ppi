@@ -23,6 +23,7 @@ import os
 import tensorflow as tf
 import keras.backend.tensorflow_backend as KTF
 
+## Part1 
 def get_session(gpu_fraction=0.2):
     '''Assume that you have 6GB of GPU memory and want to allocate ~2GB'''
 
@@ -44,9 +45,9 @@ from keras.layers import Input, CuDNNGRU
 from numpy import linalg as LA
 import scipy
 
+## Part2: read protein-dict, save as index and seqs.
 # change
 id2seq_file = '../../../yeast/preprocessed/protein.dictionary.tsv'
-
 id2index = {}
 seqs = []
 index = 0
@@ -55,6 +56,8 @@ for line in open(id2seq_file):
     id2index[line[0]] = index
     seqs.append(line[1])
     index += 1
+
+## Part3: 
 seq_array = []
 id2_aid = {}
 sid = 0
@@ -78,8 +81,7 @@ if len(sys.argv) > 1:
     hidden_dim = int(hidden_dim)
     n_epochs = int(n_epochs)
 
-seq2t = s2t(emb_files[use_emb])
-
+seq2t = s2t(emb_files[use_emb]) ####s2t???????????????
 max_data = -1
 limit_data = max_data > 0
 raw_data = []
@@ -92,8 +94,10 @@ for line in tqdm(open(ds_file)):
         skip_head = False
         continue
     line = line.rstrip('\n').rstrip('\r').split('\t')
+    # 与原始蛋白质库比对，若蛋白质名称无法匹配，则删除
     if id2index.get(line[sid1_index]) is None or id2index.get(line[sid2_index]) is None:
         continue
+    # raw_data存储匹配后的v1和v2 
     if id2_aid.get(line[sid1_index]) is None:
         id2_aid[line[sid1_index]] = sid
         sid += 1
@@ -121,7 +125,6 @@ seq_tensor = np.array([seq2t.embed_normalized(line, seq_size) for line in tqdm(s
 
 seq_index1 = np.array([line[sid1_index] for line in tqdm(raw_data)])
 seq_index2 = np.array([line[sid2_index] for line in tqdm(raw_data)])
-
 print(seq_index1[:10])
 
 class_map = {'0':1,'1':0}
